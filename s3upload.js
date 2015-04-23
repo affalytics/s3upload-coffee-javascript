@@ -2,6 +2,8 @@
 (function() {
   window.S3Upload = (function() {
     S3Upload.prototype.s3_object_name = 'default_name';
+    
+    S3Upload.prototype.access_token = '';
 
     S3Upload.prototype.s3_sign_put_url = '/signS3put';
 
