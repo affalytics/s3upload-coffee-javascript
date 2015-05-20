@@ -10,6 +10,8 @@
     S3Upload.prototype.file_dom_selector = 'file_upload';
 
     S3Upload.prototype.with_credentials = false;
+    
+    S3Upload.prototype.files_dropped = false;
 
     S3Upload.prototype.onFinishS3Put = function(public_url) {
       return console.log('base.onFinishS3Put()', public_url);
@@ -31,18 +33,11 @@
       for (option in options) {
         this[option] = options[option];
       }
-      this.handleFileSelect(document.getElementById(this.file_dom_selector));
-    }
-    
-    function S3UploadFile(options, file) {
-      var option;
-      if (options == null) {
-        options = {};
+      if (this.files_dropped) {
+        this.handleFileDrop(this.file_list);
+      } else {
+        this.handleFileSelect(document.getElementById(this.file_dom_selector));
       }
-      for (option in options) {
-        this[option] = options[option];
-      }
-      this.handleFileUpload(file);
     }
 
     S3Upload.prototype.handleFileSelect = function(file_element) {
@@ -57,12 +52,16 @@
       return results;
     };
     
-    S3Upload.prototype.handleFileUpload = function(file) {
-      var f, files, i, len, results;
-      this.onProgress(0, 'Upload started.');
-      results = [];
-      results.push(this.uploadFile(file))
-      return results;
+    S3Upload.prototype.handleFileDrop = function(file_list) {
+      var f, output, _i, _len;
+      output = [];
+      this._results = [];
+      for (_i = 0, _len = file_list.length; _i < _len; _i++) {
+        f = file_list[_i];
+        this._results.push(this.uploadFile(f));
+        this.onProgress(null, f, 0, 'Upload started.');
+      }
+      return this._results;
     };
 
     S3Upload.prototype.createCORSRequest = function(method, url) {
