@@ -33,6 +33,17 @@
       }
       this.handleFileSelect(document.getElementById(this.file_dom_selector));
     }
+    
+    function S3UploadFile(options, file) {
+      var option;
+      if (options == null) {
+        options = {};
+      }
+      for (option in options) {
+        this[option] = options[option];
+      }
+      this.handleFileUpload(file);
+    }
 
     S3Upload.prototype.handleFileSelect = function(file_element) {
       var f, files, i, len, results;
@@ -43,6 +54,14 @@
         f = files[i];
         results.push(this.uploadFile(f));
       }
+      return results;
+    };
+    
+    S3Upload.prototype.handleFileUpload = function(file) {
+      var f, files, i, len, results;
+      this.onProgress(0, 'Upload started.');
+      results = [];
+      results.push(this.uploadFile(file))
       return results;
     };
 
