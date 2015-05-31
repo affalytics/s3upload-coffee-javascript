@@ -12,6 +12,10 @@
     S3Upload.prototype.with_credentials = false;
     
     S3Upload.prototype.files_dropped = false;
+    
+    S3Upload.prototype.raw_file_mode = false;
+    
+    S3Upload.prototype.raw_file_data = null;
 
     S3Upload.prototype.onFinishS3Put = function(public_url) {
       return console.log('base.onFinishS3Put()', public_url);
@@ -35,6 +39,8 @@
       }
       if (this.files_dropped) {
         this.handleFileDrop(this.file_list);
+      } else if (this.raw_file_mode) {
+        this.handleRawFile(this.raw_file_data);
       } else {
         this.handleFileSelect(document.getElementById(this.file_dom_selector));
       }
@@ -63,6 +69,14 @@
       }
       return this._results;
     };
+    
+    S3Upload.prototype.handleRawFile = function(raw_file_data) {
+      var f = raw_file_data;
+      this._results = [];
+      this._results.push(this.uploadFile(f));
+      this.onProgress(null, f, 0, 'Upload started.');
+      return this._results;
+    }
 
     S3Upload.prototype.createCORSRequest = function(method, url) {
       var xhr;
